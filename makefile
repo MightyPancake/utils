@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -O3
 
-HEADERS = darr.h strus.h aesc.h
+HEADERS = asprintf.h darr.h strus.h aesc.h
 
 .PHONY = merge clean test run_test
 
@@ -10,7 +10,7 @@ default: all
 all: merge clean test run_test
 
 clean:
-	rm test -f
+	rm -f test
 
 test:
 	$(CC) test.c -o test $(CFLAGS)
