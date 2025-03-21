@@ -22,12 +22,31 @@ void test_darr(){
 }
 
 void test_strus(){
-  char* str = strus_new("Hello");
+  char* str = strus_copy("Hello");
   strus_cat(str, " World!");
+  printf("%s\n", str);
+  free(str);
+
+  str = strus_newf("%s world, I like %d' music!", "Hello", 80);
+  printf("%s\n", str);
+  free(str);
+
+  str = strus_new;
+  strus_cat(str, "strus!");
+  for_str(i, v, str)
+    printf("%d. %c\n", i, v);
+
+  str = strus_copy("ree tree three bree graeree");
+  char* pattern = "ree";
+  printf("'%s' has %ld '%s'\n", str, strus_count(str, pattern), pattern);
+
+  str = strus_copy("Hello World, cool right?");
+  strus_replace(str, "World", "and welcome to string utils");
+  strus_replace(str, "string utils", "strus");
   printf("%s\n", str);
 }
 
-#define CLAMP(MIN, VAL, MAX) (VAL < MIN ? MIN : (VAL > MAX ? MAX : VAL))
+// #define CLAMP(MIN, VAL, MAX) (VAL < MIN ? MIN : (VAL > MAX ? MAX : VAL))
 
 void test_aesc(){
   //Test colors
@@ -42,9 +61,9 @@ void test_aesc(){
   printf(aesc_white"white\n");
   printf(aesc_default"default\n");
   printf(aesc_reset"reset\n");
-  int red[] = {5,5,5,5,5,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,5,5,5,5};
-  int grn[] = {0,1,2,3,4,5,5,5,5,5,5,5,5,5,5,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0};
-  int blu[] = {0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,5,5,5,5,5,5,5,5,5,5,4,3,2,1};
+  // int red[] = {5,5,5,5,5,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,5,5,5,5};
+  // int grn[] = {0,1,2,3,4,5,5,5,5,5,5,5,5,5,5,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0};
+  // int blu[] = {0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,5,5,5,5,5,5,5,5,5,5,4,3,2,1};
 
   // for (int i=0; i<sizeof(red)/sizeof(red[0]); i++){
   //   int r = red[i];

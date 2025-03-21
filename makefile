@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3
+CFLAGS = -O3 -Wall
 
 HEADERS = asprintf.h darr.h strus.h aesc.h
 
