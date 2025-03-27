@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -O3 -Wall
 
-HEADERS = asprintf.h darr.h strus.h aesc.h mem.h
+HEADERS = title.h darr.h asprintf.h strus.h aesc.h mem.h fil.h
 
 .PHONY = merge clean test run_test
 

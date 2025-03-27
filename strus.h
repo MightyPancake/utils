@@ -18,6 +18,11 @@
 	#define strus_len(S) strlen(S)
 #endif
 
+#ifndef strus_cmp
+	#include <string.h>
+	#define strus_cmp(S1, S2) strcmp(S1, S2)
+#endif
+
 #ifndef strus_malloc
   #include <stdlib.h>
   #define strus_malloc(S) malloc(S)
@@ -80,6 +85,8 @@ int strus_return = 0;
 	strus_result; \
 })
 
+#define strus_eq(S1, S2) (strus_cmp(S1, S2) == 0)
+
 #define strus_cat(D, S) ({ \
 	strus_sz strus_dlen = strus_len(D); \
 	strus_sz strus_slen = strus_len(S); \
@@ -128,6 +135,9 @@ int strus_return = 0;
 	} \
 	D; \
 })
+
+#define strus_switch(S, C1) if (strus_eq(S, C1))
+#define strus_case(S, C1) else if (strus_eq(S, C1))
 
 #endif
 

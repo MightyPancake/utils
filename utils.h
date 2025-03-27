@@ -1,74 +1,18 @@
 /*
-    Shamelessly copied from:
-    https://stackoverflow.com/questions/40159892/using-asprintf-on-windows
-    reply by Fonic (https://stackoverflow.com/users/1976617/fonic)
-    based on reply by 7vujy0f0hy (https://stackoverflow.com/users/6314667/7vujy0f0hy)
-*/
-#ifndef ASPRINTF_H
-#define ASPRINTF_H
+                  _   _ _       _     
+                 | | (_) |     | |    
+            _   _| |_ _| |___  | |__  
+           | | | | __| | / __| | '_ \ 
+           | |_| | |_| | \__ \_| | | |
+            \__,_|\__|_|_|___(_)_| |_|
 
-#if defined(__GNUC__) && ! defined(_GNU_SOURCE)
-#define _GNU_SOURCE /* needed for (v)asprintf, affects '#include <stdio.h>' */
-#endif
-#include <stdio.h>  /* needed for vsnprintf    */
-#include <stdlib.h> /* needed for malloc, free */
-#include <stdarg.h> /* needed for va_*         */
 
-/*
- * vscprintf:
- * MSVC implements this as _vscprintf, thus we just 'symlink' it here
- * GNU-C-compatible compilers do not implement this, thus we implement it here
+            Simple utilities for C
+                by Filip Krol
+
+    https://github.com/MightyPancake/utils
+ 
  */
-#ifdef _MSC_VER
-#define vscprintf _vscprintf
-#endif
-
-#ifdef __GNUC__
-int vscprintf(const char *format, va_list ap)
-{
-    va_list ap_copy;
-    va_copy(ap_copy, ap);
-    int retval = vsnprintf(NULL, 0, format, ap_copy);
-    va_end(ap_copy);
-    return retval;
-}
-#endif
-
-/*
- * asprintf, vasprintf:
- * MSVC does not implement these, thus we implement them here
- * GNU-C-compatible compilers implement these with the same names, thus we
- * don't have to do anything
- */
-#ifdef _MSC_VER
-int vasprintf(char **strp, const char *format, va_list ap)
-{
-    int len = vscprintf(format, ap);
-    if (len == -1)
-        return -1;
-    char *str = (char*)malloc((size_t) len + 1);
-    if (!str)
-        return -1;
-    int retval = vsnprintf(str, len + 1, format, ap);
-    if (retval == -1) {
-        free(str);
-        return -1;
-    }
-    *strp = str;
-    return retval;
-}
-
-int asprintf(char **strp, const char *format, ...)
-{
-    va_list ap;
-    va_start(ap, format);
-    int retval = vasprintf(strp, format, ap);
-    va_end(ap);
-    return retval;
-}
-#endif
-
-#endif // ASPRINTF_H
 /***********************
   DARR - Dynamic ARRays
  ***********************/
@@ -206,6 +150,77 @@ darr_bool_t darr_empty(darr arr){
 #define darr_free(A) free((A).ptr)
 
 #endif
+/*
+    Shamelessly copied from:
+    https://stackoverflow.com/questions/40159892/using-asprintf-on-windows
+    reply by Fonic (https://stackoverflow.com/users/1976617/fonic)
+    based on reply by 7vujy0f0hy (https://stackoverflow.com/users/6314667/7vujy0f0hy)
+*/
+#ifndef ASPRINTF_H
+#define ASPRINTF_H
+
+#if defined(__GNUC__) && ! defined(_GNU_SOURCE)
+#define _GNU_SOURCE /* needed for (v)asprintf, affects '#include <stdio.h>' */
+#endif
+#include <stdio.h>  /* needed for vsnprintf    */
+#include <stdlib.h> /* needed for malloc, free */
+#include <stdarg.h> /* needed for va_*         */
+
+/*
+ * vscprintf:
+ * MSVC implements this as _vscprintf, thus we just 'symlink' it here
+ * GNU-C-compatible compilers do not implement this, thus we implement it here
+ */
+#ifdef _MSC_VER
+#define vscprintf _vscprintf
+#endif
+
+#ifdef __GNUC__
+int vscprintf(const char *format, va_list ap)
+{
+    va_list ap_copy;
+    va_copy(ap_copy, ap);
+    int retval = vsnprintf(NULL, 0, format, ap_copy);
+    va_end(ap_copy);
+    return retval;
+}
+#endif
+
+/*
+ * asprintf, vasprintf:
+ * MSVC does not implement these, thus we implement them here
+ * GNU-C-compatible compilers implement these with the same names, thus we
+ * don't have to do anything
+ */
+#ifdef _MSC_VER
+int vasprintf(char **strp, const char *format, va_list ap)
+{
+    int len = vscprintf(format, ap);
+    if (len == -1)
+        return -1;
+    char *str = (char*)malloc((size_t) len + 1);
+    if (!str)
+        return -1;
+    int retval = vsnprintf(str, len + 1, format, ap);
+    if (retval == -1) {
+        free(str);
+        return -1;
+    }
+    *strp = str;
+    return retval;
+}
+
+int asprintf(char **strp, const char *format, ...)
+{
+    va_list ap;
+    va_start(ap, format);
+    int retval = vasprintf(strp, format, ap);
+    va_end(ap);
+    return retval;
+}
+#endif
+
+#endif // ASPRINTF_H
 /***********************
   STRUS - STRing UtilS
  ***********************/
@@ -224,6 +239,11 @@ darr_bool_t darr_empty(darr arr){
 #ifndef strus_len
 	#include <string.h>
 	#define strus_len(S) strlen(S)
+#endif
+
+#ifndef strus_cmp
+	#include <string.h>
+	#define strus_cmp(S1, S2) strcmp(S1, S2)
 #endif
 
 #ifndef strus_malloc
@@ -288,6 +308,8 @@ int strus_return = 0;
 	strus_result; \
 })
 
+#define strus_eq(S1, S2) (strus_cmp(S1, S2) == 0)
+
 #define strus_cat(D, S) ({ \
 	strus_sz strus_dlen = strus_len(D); \
 	strus_sz strus_slen = strus_len(S); \
@@ -336,6 +358,9 @@ int strus_return = 0;
 	} \
 	D; \
 })
+
+#define strus_switch(S, C1) if (strus_eq(S, C1))
+#define strus_case(S, C1) else if (strus_eq(S, C1))
 
 #endif
 
@@ -418,14 +443,62 @@ char* aesc_hue[] = {A_FC(196), A_FC(202), A_FC(208), A_FC(214), A_FC(220), A_FC(
 
 #ifndef UTILS_NO_MEM
 #define UTILS_NO_MEM
-#define mem_base_type(PT) __typeof__(* ( (PT) 0 ))
-#define mem_ptr_type(T) __typeof__(T)*
+
+#ifndef mem_typeof
+  #define mem_typeof(V) __typeof__(V)
+#endif
+
+#define mem_base_type(PT) mem_typeof(* ( (PT) 0 ))
+#define mem_ptr_type(T) mem_typeof(T)*
 
 #ifndef mem_malloc
   #include <stdlib.h>
   #define mem_malloc(S) malloc(S)
 #endif
 
-#define mem_one(T) ((mem_ptr_type(T))mem_malloc(sizeof(mem_ptr_type(T))))
+#define mem_one(T) ((mem_ptr_type(T))mem_malloc(sizeof(T)))
+
+#define mem_one_cpy(V) ({ \
+  mem_ptr_type(mem_typeof(V)) MEM_TMP_VAL = mem_one(mem_typeof(V)); \
+  *MEM_TMP_VAL = V; \
+  MEM_TMP_VAL; \
+})
+
+#endif
+/***********************
+  FIL - FILe utils
+ ***********************/
+
+//TODO: Make this more abstract, so it can use other functions than the ones provided by stdio/stdlib/string
+ 
+#ifndef UTILS_NO_FIL
+#define UTILS_NO_FIL
+
+#include <stdio.h>
+#include <string.h>
+
+size_t read_file_to_string(const char *filename, char **out_string) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return 0;
+    }
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    rewind(file);
+
+    *out_string = (char *)malloc(size + 1);
+    if (!*out_string) {
+        perror("Memory allocation failed");
+        fclose(file);
+        return 0;
+    }
+
+    size_t read_size = fread(*out_string, 1, size, file);
+    (*out_string)[read_size] = '\0';
+
+    fclose(file);
+    return read_size;
+}
 
 #endif
