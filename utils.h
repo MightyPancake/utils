@@ -13,28 +13,26 @@
     https://github.com/MightyPancake/utils
  
  */
-/***********************
-  DARR - Dynamic ARRays
- ***********************/
 
-#ifndef UTILS_NO_DARR
-#define darr_base_type(PT) __typeof__(* ( (PT) 0 ))
-#define darr_ptr_type(T) __typeof__(T)*
-
-#ifndef darr_malloc
-  #include <stdlib.h>
-  #define darr_malloc(S) malloc(S)
+#ifndef UTILS_H
+#define UTILS_H
+#ifndef UTILS_H_PICK
+  #define UTILS_H_ALL
 #endif
 
-#ifndef darr_realloc
-  #include <stdlib.h>
-  #define darr_realloc(P, S) realloc(P, S)
-#endif
+/*
 
-#ifndef darr_memcpy
-  #include <string.h>
-  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
-#endif
+        Dynamic ARRays
+
+  An implementation of dynamic array
+
+*/
+
+#ifndef UTILS_H_DARR_H
+#define UTILS_H_DARR_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_DARR) //Avoid defining if module was turned off
+//Define types/macros here
 
 #ifndef darr_bool_t
   #include <stdbool.h>
@@ -56,14 +54,41 @@ typedef struct darr{
   void* ptr;
 }darr;
 
-//Initialize a new empty array
-darr darr_init(darr_len_t growth){
-  return (darr){
-    .len=0,
-    .growth=growth,
-    .ptr=NULL
-  };
-}
+darr darr_init(darr_len_t growth);
+darr_bool_t darr_full(darr arr);
+darr_bool_t darr_empty(darr arr);
+
+#ifndef darr_malloc
+  #include <stdlib.h>
+  #define darr_malloc(S) malloc(S)
+#endif
+
+#ifndef darr_realloc
+  #include <stdlib.h>
+  #define darr_realloc(P, S) realloc(P, S)
+#endif
+
+#ifndef darr_memcpy
+  #include <string.h>
+  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
+#endif
+#ifndef darr_malloc
+  #include <stdlib.h>
+  #define darr_malloc(S) malloc(S)
+#endif
+
+#ifndef darr_realloc
+  #include <stdlib.h>
+  #define darr_realloc(P, S) realloc(P, S)
+#endif
+
+#ifndef darr_memcpy
+  #include <string.h>
+  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
+#endif
+
+#define darr_base_type(PT) __typeof__(* ( (PT) 0 ))
+#define darr_ptr_type(T) __typeof__(T)*
 
 #define darr_calc_cap(L, G) (((((L)-1)/(G))+1)*(G))
 
@@ -74,16 +99,6 @@ darr darr_init(darr_len_t growth){
 
 //Resize underlying pointer of array A to size S
 #define darr_resize(A, S) ((A).ptr = darr_realloc((A).ptr, S))
-
-//Check if array A is full and needs resizing for new elements
-darr_bool_t darr_full(darr arr){
-  return arr.len % arr.growth == 0;
-}
-
-//Check if array A empty
-darr_bool_t darr_empty(darr arr){
-  return !arr.len;
-}
 
 //Create a new array with type T and capacity growth G
 #define darr_new(T, G) (darr_init(G))
@@ -148,8 +163,33 @@ darr_bool_t darr_empty(darr arr){
 
 //Free the dynamic array A
 #define darr_free(A) free((A).ptr)
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_DARR_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
+//Initialize a new empty array
+darr darr_init(darr_len_t growth){
+  return (darr){
+    .len=0,
+    .growth=growth,
+    .ptr=NULL
+  };
+}
+//Check if array A is full and needs resizing for new elements
+darr_bool_t darr_full(darr arr){
+  return arr.len % arr.growth == 0;
+}
 
-#endif
+//Check if array A empty
+darr_bool_t darr_empty(darr arr){
+  return !arr.len;
+}
+
+//end of variables
+#endif //UTILS_H_DARR_IMPLEMENTATION
+
+#endif //UTILS_H_ALL || UTILS_H_DARR
+
+#endif //UTILS_H_DARR_H
 /*
     Shamelessly copied from:
     https://stackoverflow.com/questions/40159892/using-asprintf-on-windows
@@ -221,12 +261,19 @@ int asprintf(char **strp, const char *format, ...)
 #endif
 
 #endif // ASPRINTF_H
-/***********************
-  STRUS - STRing UtilS
- ***********************/
+/*
 
-#ifndef UTILS_NO_STRUS
+        STRing UtilS
 
+  String manipulation and creation
+
+*/
+
+#ifndef UTILS_H_STRUS_H
+#define UTILS_H_STRUS_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_STRUS) //Avoid defining if module was turned off
+//Define types/macros here
 #ifndef strus_byte
 	#define strus_byte char
 #endif
@@ -287,7 +334,6 @@ int asprintf(char **strp, const char *format, ...)
 	#define strus_return strus_returned_value
 #endif
 
-int strus_return = 0;
 
 #define strus_new ({ \
 	strus_byte* strus_result = (strus_byte*)strus_malloc(sizeof(strus_byte)*(1)); \
@@ -297,7 +343,7 @@ int strus_return = 0;
 
 #define strus_newf(FMT, ...) ({ \
 	strus_byte* strus_result; \
-	strus_return = strus_asprintf(&strus_result, FMT, __VA_ARGS__); \
+	strus_return = strus_asprintf(&strus_result, FMT, ##__VA_ARGS__); \
 	strus_result; \
 })
 
@@ -362,11 +408,37 @@ int strus_return = 0;
 #define strus_switch(S, C1) if (strus_eq(S, C1))
 #define strus_case(S, C1) else if (strus_eq(S, C1))
 
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_STRUS_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
+
+int strus_return = 0;
+
+//end of variables
+#endif //UTILS_H_STRUS_IMPLEMENTATION
+
+#endif //UTILS_H_ALL || UTILS_H_STRUS
+
+#endif //UTILS_H_STRUS_H
+/*
+
+        Ansii ESCape
+
+  Collection of macros for ANSII escape codes for use in terminal programs
+  ie. colors, blinking, erasing etc.
+
+*/
+
+#ifndef UTILS_H_AESC_H
+#define UTILS_H_AESC_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_AESC) //Avoid defining if module was turned off
+//Define types here
+#ifndef aesc_printf
+  #include <stdio.h>
+  #define aesc_printf(FMT, ...) printf(FMT, ##__VAR_ARGS__)
 #endif
-
-#ifndef UTILS_NO_AESC
-
-#define aesc_do(C) printf(C)
+#define aesc_do(C) aesc_printf(C)
 
 #define aesc_seq(S) "\x1B"S
 #define aesc_style(S) aesc_seq("["S"m")
@@ -435,15 +507,29 @@ char* aesc_hue[] = {A_FC(196), A_FC(202), A_FC(208), A_FC(214), A_FC(220), A_FC(
 //Map
 #define aesc_map(I, S) aesc_seq("[" I ";" S ";p")
 
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_AESC_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 
-#endif
-/***********************
-  MEM - MEMory utils
- ***********************/
+//end of variables
+#endif //UTILS_H_AESC_IMPLEMENTATION
 
-#ifndef UTILS_NO_MEM
-#define UTILS_NO_MEM
+#endif //UTILS_H_ALL || UTILS_H_AESC
 
+#endif //UTILS_H_AESC_H
+/*
+
+        MEMory
+
+  Set of memory related utilities
+
+*/
+
+#ifndef UTILS_H_MEM_H
+#define UTILS_H_MEM_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_MEM) //Avoid defining if module was turned off
+//Define types/macros here
 #ifndef mem_typeof
   #define mem_typeof(V) __typeof__(V)
 #endif
@@ -464,19 +550,37 @@ char* aesc_hue[] = {A_FC(196), A_FC(202), A_FC(208), A_FC(214), A_FC(220), A_FC(
   MEM_TMP_VAL; \
 })
 
-#endif
-/***********************
-  FIL - FILe utils
- ***********************/
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_MEM_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 
-//TODO: Make this more abstract, so it can use other functions than the ones provided by stdio/stdlib/string
- 
-#ifndef UTILS_NO_FIL
-#define UTILS_NO_FIL
+//end of variables
+#endif //UTILS_H_MEM_IMPLEMENTATION
 
+#endif //UTILS_H_ALL || UTILS_H_MEM
+
+#endif //UTILS_H_MEM_H
+/*
+
+        FIL.h
+
+  Description for FIL.h
+
+*/
+
+#ifndef UTILS_H_FIL_H
+#define UTILS_H_FIL_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_FIL) //Avoid defining if module was turned off
+//Define types/macros here
 #include <stdio.h>
 #include <string.h>
 
+size_t read_file_to_string(const char *filename, char **out_string);
+
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_FIL_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 size_t read_file_to_string(const char *filename, char **out_string) {
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -500,5 +604,10 @@ size_t read_file_to_string(const char *filename, char **out_string) {
     fclose(file);
     return read_size;
 }
+//end of variables
+#endif //UTILS_H_FIL_IMPLEMENTATION
 
-#endif
+#endif //UTILS_H_ALL || UTILS_H_FIL
+
+#endif //UTILS_H_FIL_H
+#endif //UTILS.H

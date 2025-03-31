@@ -13,3 +13,10 @@
     https://github.com/MightyPancake/utils
  
  */
+
+#ifndef UTILS_H
+#define UTILS_H
+#ifndef UTILS_H_PICK
+  #define UTILS_H_ALL
+#endif
+

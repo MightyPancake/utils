@@ -1,15 +1,24 @@
-/***********************
-  FIL - FILe utils
- ***********************/
+/*
 
-//TODO: Make this more abstract, so it can use other functions than the ones provided by stdio/stdlib/string
- 
-#ifndef UTILS_NO_FIL
-#define UTILS_NO_FIL
+        FIL.h
 
+  Description for FIL.h
+
+*/
+
+#ifndef UTILS_H_FIL_H
+#define UTILS_H_FIL_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_FIL) //Avoid defining if module was turned off
+//Define types/macros here
 #include <stdio.h>
 #include <string.h>
 
+size_t read_file_to_string(const char *filename, char **out_string);
+
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_FIL_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 size_t read_file_to_string(const char *filename, char **out_string) {
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -33,5 +42,9 @@ size_t read_file_to_string(const char *filename, char **out_string) {
     fclose(file);
     return read_size;
 }
+//end of variables
+#endif //UTILS_H_FIL_IMPLEMENTATION
 
-#endif
+#endif //UTILS_H_ALL || UTILS_H_FIL
+
+#endif //UTILS_H_FIL_H

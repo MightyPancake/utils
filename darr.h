@@ -1,25 +1,16 @@
-/***********************
-  DARR - Dynamic ARRays
- ***********************/
+/*
 
-#ifndef UTILS_NO_DARR
-#define darr_base_type(PT) __typeof__(* ( (PT) 0 ))
-#define darr_ptr_type(T) __typeof__(T)*
+        Dynamic ARRays
 
-#ifndef darr_malloc
-  #include <stdlib.h>
-  #define darr_malloc(S) malloc(S)
-#endif
+  An implementation of dynamic array
 
-#ifndef darr_realloc
-  #include <stdlib.h>
-  #define darr_realloc(P, S) realloc(P, S)
-#endif
+*/
 
-#ifndef darr_memcpy
-  #include <string.h>
-  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
-#endif
+#ifndef UTILS_H_DARR_H
+#define UTILS_H_DARR_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_DARR) //Avoid defining if module was turned off
+//Define types/macros here
 
 #ifndef darr_bool_t
   #include <stdbool.h>
@@ -41,14 +32,41 @@ typedef struct darr{
   void* ptr;
 }darr;
 
-//Initialize a new empty array
-darr darr_init(darr_len_t growth){
-  return (darr){
-    .len=0,
-    .growth=growth,
-    .ptr=NULL
-  };
-}
+darr darr_init(darr_len_t growth);
+darr_bool_t darr_full(darr arr);
+darr_bool_t darr_empty(darr arr);
+
+#ifndef darr_malloc
+  #include <stdlib.h>
+  #define darr_malloc(S) malloc(S)
+#endif
+
+#ifndef darr_realloc
+  #include <stdlib.h>
+  #define darr_realloc(P, S) realloc(P, S)
+#endif
+
+#ifndef darr_memcpy
+  #include <string.h>
+  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
+#endif
+#ifndef darr_malloc
+  #include <stdlib.h>
+  #define darr_malloc(S) malloc(S)
+#endif
+
+#ifndef darr_realloc
+  #include <stdlib.h>
+  #define darr_realloc(P, S) realloc(P, S)
+#endif
+
+#ifndef darr_memcpy
+  #include <string.h>
+  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
+#endif
+
+#define darr_base_type(PT) __typeof__(* ( (PT) 0 ))
+#define darr_ptr_type(T) __typeof__(T)*
 
 #define darr_calc_cap(L, G) (((((L)-1)/(G))+1)*(G))
 
@@ -59,16 +77,6 @@ darr darr_init(darr_len_t growth){
 
 //Resize underlying pointer of array A to size S
 #define darr_resize(A, S) ((A).ptr = darr_realloc((A).ptr, S))
-
-//Check if array A is full and needs resizing for new elements
-darr_bool_t darr_full(darr arr){
-  return arr.len % arr.growth == 0;
-}
-
-//Check if array A empty
-darr_bool_t darr_empty(darr arr){
-  return !arr.len;
-}
 
 //Create a new array with type T and capacity growth G
 #define darr_new(T, G) (darr_init(G))
@@ -133,5 +141,30 @@ darr_bool_t darr_empty(darr arr){
 
 //Free the dynamic array A
 #define darr_free(A) free((A).ptr)
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_DARR_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
+//Initialize a new empty array
+darr darr_init(darr_len_t growth){
+  return (darr){
+    .len=0,
+    .growth=growth,
+    .ptr=NULL
+  };
+}
+//Check if array A is full and needs resizing for new elements
+darr_bool_t darr_full(darr arr){
+  return arr.len % arr.growth == 0;
+}
 
-#endif
+//Check if array A empty
+darr_bool_t darr_empty(darr arr){
+  return !arr.len;
+}
+
+//end of variables
+#endif //UTILS_H_DARR_IMPLEMENTATION
+
+#endif //UTILS_H_ALL || UTILS_H_DARR
+
+#endif //UTILS_H_DARR_H

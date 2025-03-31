@@ -1,3 +1,4 @@
+#define UTILS_H_IMPLEMENTATION
 #include "utils.h"
 #include <stdio.h>
 

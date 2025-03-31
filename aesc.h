@@ -1,6 +1,22 @@
-#ifndef UTILS_NO_AESC
+/*
 
-#define aesc_do(C) printf(C)
+        Ansii ESCape
+
+  Collection of macros for ANSII escape codes for use in terminal programs
+  ie. colors, blinking, erasing etc.
+
+*/
+
+#ifndef UTILS_H_AESC_H
+#define UTILS_H_AESC_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_AESC) //Avoid defining if module was turned off
+//Define types here
+#ifndef aesc_printf
+  #include <stdio.h>
+  #define aesc_printf(FMT, ...) printf(FMT, ##__VAR_ARGS__)
+#endif
+#define aesc_do(C) aesc_printf(C)
 
 #define aesc_seq(S) "\x1B"S
 #define aesc_style(S) aesc_seq("["S"m")
@@ -69,5 +85,13 @@ char* aesc_hue[] = {A_FC(196), A_FC(202), A_FC(208), A_FC(214), A_FC(220), A_FC(
 //Map
 #define aesc_map(I, S) aesc_seq("[" I ";" S ";p")
 
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_AESC_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 
-#endif
+//end of variables
+#endif //UTILS_H_AESC_IMPLEMENTATION
+
+#endif //UTILS_H_ALL || UTILS_H_AESC
+
+#endif //UTILS_H_AESC_H

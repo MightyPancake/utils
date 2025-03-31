@@ -1,10 +1,16 @@
-/***********************
-  MEM - MEMory utils
- ***********************/
+/*
 
-#ifndef UTILS_NO_MEM
-#define UTILS_NO_MEM
+        MEMory
 
+  Set of memory related utilities
+
+*/
+
+#ifndef UTILS_H_MEM_H
+#define UTILS_H_MEM_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_MEM) //Avoid defining if module was turned off
+//Define types/macros here
 #ifndef mem_typeof
   #define mem_typeof(V) __typeof__(V)
 #endif
@@ -25,4 +31,13 @@
   MEM_TMP_VAL; \
 })
 
-#endif
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_MEM_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
+
+//end of variables
+#endif //UTILS_H_MEM_IMPLEMENTATION
+
+#endif //UTILS_H_ALL || UTILS_H_MEM
+
+#endif //UTILS_H_MEM_H

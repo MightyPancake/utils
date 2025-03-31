@@ -1,9 +1,16 @@
-/***********************
-  STRUS - STRing UtilS
- ***********************/
+/*
 
-#ifndef UTILS_NO_STRUS
+        STRing UtilS
 
+  String manipulation and creation
+
+*/
+
+#ifndef UTILS_H_STRUS_H
+#define UTILS_H_STRUS_H
+
+#if defined(UTILS_H_ALL) || defined(UTILS_H_STRUS) //Avoid defining if module was turned off
+//Define types/macros here
 #ifndef strus_byte
 	#define strus_byte char
 #endif
@@ -64,7 +71,6 @@
 	#define strus_return strus_returned_value
 #endif
 
-int strus_return = 0;
 
 #define strus_new ({ \
 	strus_byte* strus_result = (strus_byte*)strus_malloc(sizeof(strus_byte)*(1)); \
@@ -74,7 +80,7 @@ int strus_return = 0;
 
 #define strus_newf(FMT, ...) ({ \
 	strus_byte* strus_result; \
-	strus_return = strus_asprintf(&strus_result, FMT, __VA_ARGS__); \
+	strus_return = strus_asprintf(&strus_result, FMT, ##__VA_ARGS__); \
 	strus_result; \
 })
 
@@ -139,5 +145,15 @@ int strus_return = 0;
 #define strus_switch(S, C1) if (strus_eq(S, C1))
 #define strus_case(S, C1) else if (strus_eq(S, C1))
 
-#endif
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_STRUS_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 
+int strus_return = 0;
+
+//end of variables
+#endif //UTILS_H_STRUS_IMPLEMENTATION
+
+#endif //UTILS_H_ALL || UTILS_H_STRUS
+
+#endif //UTILS_H_STRUS_H
