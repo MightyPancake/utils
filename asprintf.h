@@ -4,8 +4,9 @@
     reply by Fonic (https://stackoverflow.com/users/1976617/fonic)
     based on reply by 7vujy0f0hy (https://stackoverflow.com/users/6314667/7vujy0f0hy)
 */
-#ifndef ASPRINTF_H
-#define ASPRINTF_H
+#ifndef UTILS_H_ASPRINTF_H
+#define UTILS_H_ASPRINTF_H
+#if defined(UTILS_H_ALL) || defined(UTILS_H_ASPRINTF) //Avoid defining if module was turned off
 
 #if defined(__GNUC__) && ! defined(_GNU_SOURCE)
 #define _GNU_SOURCE /* needed for (v)asprintf, affects '#include <stdio.h>' */
@@ -23,6 +24,9 @@
 #define vscprintf _vscprintf
 #endif
 
+//end of types
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_ASPRINTF_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 #ifdef __GNUC__
 int vscprintf(const char *format, va_list ap)
 {
@@ -67,5 +71,9 @@ int asprintf(char **strp, const char *format, ...)
     return retval;
 }
 #endif
+//end of variables
+#endif //UTILS_H_ASPRINTF_IMPLEMENTATION
 
-#endif // ASPRINTF_H
+#endif //UTILS_H_ALL || UTILS_H_ASPRINTF
+
+#endif // UTILS_H_ASPRINTF_H

@@ -12,6 +12,11 @@
 
 #if defined(UTILS_H_ALL) || defined(UTILS_H_AESC) //Avoid defining if module was turned off
 //Define types here
+#ifndef aesc_size_t
+  #include <stdlib.h>
+  #define aesc_size_t size_t
+#endif
+
 #ifndef aesc_printf
   #include <stdio.h>
   #define aesc_printf(FMT, ...) printf(FMT, ##__VAR_ARGS__)
@@ -35,6 +40,25 @@
 #define aesc_default aesc_style("39")
 
 #define aesc_fg_color(V) aesc_seq("[38;5;"#V"m")
+
+//Cursor
+#define aesc_home aesc_seq("[H")
+#define aesc_mv(X, Y) aesc_seq("[" #X ";" #Y "f")
+#define aesc_up(V) aesc_seq("[" #V "A")
+#define aesc_down(V) aesc_seq("[" #V "B")
+#define aesc_right(V) aesc_seq("[" #V "C")
+#define aesc_left(V) aesc_seq("[" #V "D")
+
+//Erase
+#define aesc_clear aesc_seq("[J")
+#define aesc_erase aesc_seq("[K")
+
+//Map
+#define aesc_map(I, S) aesc_seq("[" I ";" S ";p")
+
+//end of types/macros
+#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_AESC_IMPLEMENTATION) //Implementation part only gets compiled once
+//Declare variables here
 #define A_FC(V) aesc_fg_color(V)
 const char* aesc_colors[] = {
   A_FC(0), A_FC(1), A_FC(2), A_FC(3), A_FC(4), A_FC(5), A_FC(6), A_FC(7), A_FC(8), A_FC(9),
@@ -66,29 +90,9 @@ const char* aesc_colors[] = {
 };
 
 char* aesc_hue[] = {A_FC(196), A_FC(202), A_FC(208), A_FC(214), A_FC(220), A_FC(226), A_FC(190), A_FC(154), A_FC(118), A_FC(82), A_FC(46), A_FC(47), A_FC(48), A_FC(49), A_FC(50), A_FC(51), A_FC(45), A_FC(39), A_FC(33), A_FC(27), A_FC(21), A_FC(57), A_FC(93), A_FC(129), A_FC(165), A_FC(201), A_FC(200), A_FC(199), A_FC(198), A_FC(197)};
-#define aesc_hue_len (sizeof(aesc_hue)/sizeof(aesc_hue[0]))
+const aesc_size_t aesc_hue_len = (sizeof(aesc_hue)/sizeof(aesc_hue[0]));
 
 #undef A_FC
-
-//Cursor
-#define aesc_home aesc_seq("[H")
-#define aesc_mv(X, Y) aesc_seq("[" #X ";" #Y "f")
-#define aesc_up(V) aesc_seq("[" #V "A")
-#define aesc_down(V) aesc_seq("[" #V "B")
-#define aesc_right(V) aesc_seq("[" #V "C")
-#define aesc_left(V) aesc_seq("[" #V "D")
-
-//Erase
-#define aesc_clear aesc_seq("[J")
-#define aesc_erase aesc_seq("[K")
-
-//Map
-#define aesc_map(I, S) aesc_seq("[" I ";" S ";p")
-
-//end of types/macros
-#if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_AESC_IMPLEMENTATION) //Implementation part only gets compiled once
-//Declare variables here
-
 //end of variables
 #endif //UTILS_H_AESC_IMPLEMENTATION
 
