@@ -35,6 +35,7 @@ typedef struct darr{
 darr darr_init(darr_len_t growth);
 darr_bool_t darr_full(darr arr);
 darr_bool_t darr_empty(darr arr);
+darr_len_t darr_len(darr arr);
 
 #ifndef darr_malloc
   #include <stdlib.h>
@@ -98,7 +99,7 @@ darr_bool_t darr_empty(darr arr);
 #define darr_push(T, A, E) ({ \
   if (darr_full(A)) darr_resize(A, sizeof(T)*((A).len+(A).growth)); \
   darr_at(T, A, (A).len++) = E; \
-  (A).len; \
+  darr_len(A); \
 })
 
 //Pops the last element from array A of type T
@@ -160,6 +161,11 @@ darr_bool_t darr_full(darr arr){
 //Check if array A empty
 darr_bool_t darr_empty(darr arr){
   return !arr.len;
+}
+
+//Returns the length of array arr
+darr_len_t darr_len(darr arr){
+  return arr.len;
 }
 
 //end of variables

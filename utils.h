@@ -57,6 +57,7 @@ typedef struct darr{
 darr darr_init(darr_len_t growth);
 darr_bool_t darr_full(darr arr);
 darr_bool_t darr_empty(darr arr);
+darr_len_t darr_len(darr arr);
 
 #ifndef darr_malloc
   #include <stdlib.h>
@@ -120,7 +121,7 @@ darr_bool_t darr_empty(darr arr);
 #define darr_push(T, A, E) ({ \
   if (darr_full(A)) darr_resize(A, sizeof(T)*((A).len+(A).growth)); \
   darr_at(T, A, (A).len++) = E; \
-  (A).len; \
+  darr_len(A); \
 })
 
 //Pops the last element from array A of type T
@@ -182,6 +183,11 @@ darr_bool_t darr_full(darr arr){
 //Check if array A empty
 darr_bool_t darr_empty(darr arr){
   return !arr.len;
+}
+
+//Returns the length of array arr
+darr_len_t darr_len(darr arr){
+  return arr.len;
 }
 
 //end of variables
@@ -324,6 +330,8 @@ int asprintf(char **strp, const char *format, ...)
   #define strus_sprintf(D, FMT, ...) sprintf(D, FMT, __VA_ARGS__)
 #endif
 
+extern int strus_return;
+
 #define strus_index(S, P) ((strus_sz)(strus_sz)(P-S))
 
 #ifndef strus_find_ptr
@@ -337,11 +345,6 @@ int asprintf(char **strp, const char *format, ...)
 		strus_result == NULL ? -1 : strus_index(S, strus_result); \
 	})
 #endif
-
-#ifndef strus_err
-	#define strus_return strus_returned_value
-#endif
-
 
 #define strus_new ({ \
 	strus_byte* strus_result = (strus_byte*)strus_malloc(sizeof(strus_byte)*(1)); \
@@ -485,6 +488,10 @@ int strus_return = 0;
 
 //Map
 #define aesc_map(I, S) aesc_seq("[" I ";" S ";p")
+
+// extern const char* aesc_colors[];
+// extern char* aesc_hue[] = {A_FC(196), A_FC(202), A_FC(208), A_FC(214), A_FC(220), A_FC(226), A_FC(190), A_FC(154), A_FC(118), A_FC(82), A_FC(46), A_FC(47), A_FC(48), A_FC(49), A_FC(50), A_FC(51), A_FC(45), A_FC(39), A_FC(33), A_FC(27), A_FC(21), A_FC(57), A_FC(93), A_FC(129), A_FC(165), A_FC(201), A_FC(200), A_FC(199), A_FC(198), A_FC(197)};
+// extern const aesc_size_t aesc_hue_len;
 
 //end of types/macros
 #if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_AESC_IMPLEMENTATION) //Implementation part only gets compiled once

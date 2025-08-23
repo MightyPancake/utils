@@ -53,6 +53,8 @@
   #define strus_sprintf(D, FMT, ...) sprintf(D, FMT, __VA_ARGS__)
 #endif
 
+extern int strus_return;
+
 #define strus_index(S, P) ((strus_sz)(strus_sz)(P-S))
 
 #ifndef strus_find_ptr
@@ -66,11 +68,6 @@
 		strus_result == NULL ? -1 : strus_index(S, strus_result); \
 	})
 #endif
-
-#ifndef strus_err
-	#define strus_return strus_returned_value
-#endif
-
 
 #define strus_new ({ \
 	strus_byte* strus_result = (strus_byte*)strus_malloc(sizeof(strus_byte)*(1)); \
