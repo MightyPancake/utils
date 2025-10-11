@@ -76,9 +76,9 @@ extern int strus_return;
 })
 
 #define strus_newf(FMT, ...) ({ \
-	strus_byte* strus_result; \
-	strus_return = strus_asprintf(&strus_result, FMT, ##__VA_ARGS__); \
-	strus_result; \
+    strus_byte* strus_result; \
+    strus_asprintf(&strus_result, FMT __VA_OPT__(,) __VA_ARGS__); \
+    strus_result; \
 })
 
 #define strus_copy(S) ({ \
