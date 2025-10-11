@@ -4,6 +4,36 @@
 
 #define test_util_module(M) printf(#M" test:\n"); test_##M();
 
+kenobi_new_struct_free(my_cool_struct,
+  int a;
+  int b;
+  union {
+    int  c;
+    char d;
+  };
+  enum {
+    my_cool_enum_0,
+    my_cool_enum_1,
+    my_cool_enum_2,
+    my_cool_enum_3
+  } e;
+)
+
+void test_kenobi(){
+  my_cool_struct example = (my_cool_struct){
+    .a=1,
+    .b=2,
+    .c=3,
+    .e=my_cool_enum_3
+  };
+  //Notice how it called before being implemented; macro declares a free function.
+  my_cool_struct_free(example);
+}
+
+void my_cool_struct_free(my_cool_struct mcs){
+  printf("my_cool_struct is now free! Fly high my friend :)\n");
+}
+
 void test_darr(){
   // darr arr = darr_new(int, 8);
   darr arr = darr_copy(int, ((int[]){0,1,4,9}), 8);
@@ -81,6 +111,8 @@ void test_aesc(){
 }
 
 int main(){
+  //Test kenobi
+  test_util_module(kenobi);
   //Test darr
   test_util_module(darr);
 	//Test aesc
