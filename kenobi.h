@@ -13,14 +13,14 @@
 //Define types/macros here
 #define kenobi_new_struct(NAME, ...) typedef struct NAME{ \
         __VA_ARGS__  \
-}NAME;
+}NAME
 
-#define kenobi_new_struct_free(NAME, ...) kenobi_new_struct(NAME, __VA_ARGS__) \
-void NAME##_free();
+#define kenobi_new_struct_free(NAME, ...) kenobi_new_struct(NAME, __VA_ARGS__); \
+void NAME##_free()
 
 #define kenobi_new_enum(NAME, ...) typedef enum NAME{ \
         __VA_ARGS__  \
-}NAME;
+}NAME
 
 //end of types
 #if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_KENOBI_IMPLEMENTATION) //Implementation part only gets compiled once
