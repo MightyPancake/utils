@@ -46,11 +46,11 @@
 #endif
 
 #ifndef strus_asprintf
-  #define strus_asprintf(D, FMT, ...) asprintf(D, FMT, __VA_ARGS__)
+  #define strus_asprintf(D, FMT, ...) asprintf(D, FMT __VA_OPT__(,) __VA_ARGS__)
 #endif
 
 #ifndef strus_sprintf
-  #define strus_sprintf(D, FMT, ...) sprintf(D, FMT, __VA_ARGS__)
+  #define strus_sprintf(D, FMT, ...) sprintf(D, FMT __VA_OPT__(,) __VA_ARGS__)
 #endif
 
 extern int strus_return;
