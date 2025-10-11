@@ -17,7 +17,7 @@ kenobi_new_struct_free(my_cool_struct,
     my_cool_enum_2,
     my_cool_enum_3
   } e;
-)
+);
 
 void test_kenobi(){
   my_cool_struct example = (my_cool_struct){
