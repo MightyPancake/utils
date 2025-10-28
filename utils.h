@@ -107,20 +107,6 @@ darr_len_t darr_len(darr arr);
   #include <string.h>
   #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
 #endif
-#ifndef darr_malloc
-  #include <stdlib.h>
-  #define darr_malloc(S) malloc(S)
-#endif
-
-#ifndef darr_realloc
-  #include <stdlib.h>
-  #define darr_realloc(P, S) realloc(P, S)
-#endif
-
-#ifndef darr_memcpy
-  #include <string.h>
-  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
-#endif
 
 #define darr_base_type(PT) __typeof__(* ( (PT) 0 ))
 #define darr_ptr_type(T) __typeof__(T)*
