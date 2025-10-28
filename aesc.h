@@ -23,8 +23,8 @@
 #endif
 #define aesc_do(C) aesc_printf(C)
 
-#define aesc_seq(S) "\x1B"S
-#define aesc_style(S) aesc_seq("["S"m")
+#define aesc_seq(S) ("\x1B"S)
+#define aesc_style(S) (aesc_seq("["S"m"))
 
 // Colors
 #define aesc_reset aesc_style("0")
