@@ -46,7 +46,9 @@
 #endif
 
 #ifndef strus_asprintf
-  #define strus_asprintf(D, FMT, ...) asprintf(D, FMT __VA_OPT__(,) __VA_ARGS__)
+  #define strus_asprintf(D, FMT, ...) ({ \
+	if(asprintf(D, FMT __VA_OPT__(,) __VA_ARGS__) < 0) kenobi_panic("asprintf failed"); \
+  })
 #endif
 
 #ifndef strus_sprintf

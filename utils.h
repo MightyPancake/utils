@@ -33,6 +33,14 @@
 
 #if defined(UTILS_H_ALL) || defined(UTILS_H_KENOBI) //Avoid defining if module was turned off
 //Define types/macros here
+#ifndef kenobi_perror
+        #include <stdio.h>
+        #define kenobi_perror(MSG) perror(MSG)
+#endif
+#ifndef kenobi_abort
+        #include <stdlib.h>
+        #define kenobi_abort() abort()
+#endif
 #define kenobi_new_struct(NAME, ...) typedef struct NAME{ \
         __VA_ARGS__  \
 }NAME
@@ -44,9 +52,15 @@ void NAME##_free(NAME)
         __VA_ARGS__  \
 }NAME
 
+void kenobi_panic(const char* MSG);
+
 //end of types
 #if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_KENOBI_IMPLEMENTATION) //Implementation part only gets compiled once
 //Declare variables here
+void kenobi_panic(const char* MSG) {
+        kenobi_perror(MSG);
+        kenobi_abort();
+}
 
 //end of variables
 #endif //UTILS_H_KENOBI_IMPLEMENTATION
@@ -357,7 +371,9 @@ int asprintf(char **strp, const char *format, ...)
 #endif
 
 #ifndef strus_asprintf
-  #define strus_asprintf(D, FMT, ...) asprintf(D, FMT __VA_OPT__(,) __VA_ARGS__)
+  #define strus_asprintf(D, FMT, ...) ({ \
+	if(asprintf(D, FMT __VA_OPT__(,) __VA_ARGS__) < 0) kenobi_panic("asprintf failed"); \
+  })
 #endif
 
 #ifndef strus_sprintf
