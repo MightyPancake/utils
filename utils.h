@@ -38,7 +38,7 @@
 }NAME
 
 #define kenobi_new_struct_free(NAME, ...) kenobi_new_struct(NAME, __VA_ARGS__); \
-void NAME##_free()
+void NAME##_free(NAME)
 
 #define kenobi_new_enum(NAME, ...) typedef enum NAME{ \
         __VA_ARGS__  \
@@ -93,6 +93,20 @@ darr_bool_t darr_full(darr arr);
 darr_bool_t darr_empty(darr arr);
 darr_len_t darr_len(darr arr);
 
+#ifndef darr_malloc
+  #include <stdlib.h>
+  #define darr_malloc(S) malloc(S)
+#endif
+
+#ifndef darr_realloc
+  #include <stdlib.h>
+  #define darr_realloc(P, S) realloc(P, S)
+#endif
+
+#ifndef darr_memcpy
+  #include <string.h>
+  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
+#endif
 #ifndef darr_malloc
   #include <stdlib.h>
   #define darr_malloc(S) malloc(S)

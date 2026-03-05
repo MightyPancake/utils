@@ -16,7 +16,7 @@
 }NAME
 
 #define kenobi_new_struct_free(NAME, ...) kenobi_new_struct(NAME, __VA_ARGS__); \
-void NAME##_free()
+void NAME##_free(NAME)
 
 #define kenobi_new_enum(NAME, ...) typedef enum NAME{ \
         __VA_ARGS__  \
