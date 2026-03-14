@@ -84,10 +84,10 @@ typedef struct darr_header {
 
 //Access
 //Length of the array
-#define darr_len(A) ((A) ? darr_get_header(A)->len : 0)
+#define darr_len(A) (darr_get_header(A)->len)
 
 //Capacity of the array
-#define darr_cap(A) ((A) ? darr_get_header(A)->cap : 0)
+#define darr_cap(A) (darr_get_header(A)->cap)
 
 //Value of first element of the array A
 #define darr_first(A) ((A)[0])
@@ -99,14 +99,15 @@ typedef struct darr_header {
 //Push element E to array A
 #define darr_push(A, E) ({ \
     _darr_grow_if_needed(A); \
-    (A)[darr_get_header(A)->len++] = (E); \
-    E; \
+    __typeof__(E) _darr_push_val = (E); \
+    (A)[darr_len(A)++] = _darr_push_val; \
+    _darr_push_val; \
 })
 
 //Pop element from array A
 #define darr_pop(A) ({ \
     darr_get_header(A)->len--; \
-    (A)[darr_get_header(A)->len]; \
+    (A)[darr_len(A)]; \
 })
 
 //Free
