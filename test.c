@@ -36,16 +36,16 @@ void my_cool_struct_free(my_cool_struct mcs){
 
 void test_darr(){
   // darr arr = darr_new(int, 8);
-  darr arr = darr_copy(int, ((int[]){0,1,4,9}), 8);
+  darr(int) arr = darr_new(int, .cap=4, .src=(int[]){0,1,2,3});
   for (int i=4; i<10; i++)
-    darr_push(int, arr, i*i);
+    darr_push(arr, i*i);
 
   //Iterate index and value
-  for_darr(i, int, v, arr)
+  for_darr(i, v, arr)
     printf("%ld: %d\n", i, v);
   
   //Iterate over pointers to elements
-  for_darr_elems(int, v, arr)
+  for_darr_elems(v, arr)
     printf("%d\n", *v);
     
 

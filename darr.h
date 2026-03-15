@@ -26,147 +26,108 @@
   #define darr_len_t darr_size_t
 #endif
 
-typedef struct darr{
-  darr_len_t len;
-  darr_len_t growth;
-  void* ptr;
-}darr;
+typedef struct darr_header {
+    darr_size_t len;
+    darr_size_t cap;
+} darr_header;
 
-darr darr_init(darr_len_t growth);
-darr_bool_t darr_full(darr arr);
-darr_bool_t darr_empty(darr arr);
-darr_len_t darr_len(darr arr);
+#define darr_default_cap 8
+#define darr_prefix_sz (sizeof(darr_header))
 
-#ifndef darr_malloc
-  #include <stdlib.h>
-  #define darr_malloc(S) malloc(S)
-#endif
+//Helpers
+//Internal check if growth of array A is needed to fit in an extra element and resize if it is.
+#define _darr_grow_if_needed(A) do { \
+    if (!(A)) darr_init(A); \
+    darr_header* _h = darr_get_header(A); \
+    if (_h->len >= _h->cap) { \
+        darr_size_t _new_cap = _h->cap * 2; \
+        darr_resize(A, _new_cap); \
+    } \
+} while(0)
 
-#ifndef darr_realloc
-  #include <stdlib.h>
-  #define darr_realloc(P, S) realloc(P, S)
-#endif
+//Get header from array pointer
+#define darr_get_header(A) ((darr_header*)((char*)(A) - darr_prefix_sz))
 
-#ifndef darr_memcpy
-  #include <string.h>
-  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
-#endif
-#ifndef darr_malloc
-  #include <stdlib.h>
-  #define darr_malloc(S) malloc(S)
-#endif
+//Type used in declarations for dynamic array of type T
+#define darr(T) T*
 
-#ifndef darr_realloc
-  #include <stdlib.h>
-  #define darr_realloc(P, S) realloc(P, S)
-#endif
+//Resize array A to hold NEW_CAP elements
+#define darr_resize(A, NEW_CAP) do { \
+    darr_header* _h = darr_get_header(A); \
+    size_t _new_sz = darr_prefix_sz + (sizeof(*(A)) * (NEW_CAP)); \
+    darr_header* _new_h = (darr_header*)realloc(_h, _new_sz); \
+    if (_new_h) { \
+        _new_h->cap = (NEW_CAP); \
+        (A) = (void*)((char*)_new_h + darr_prefix_sz); \
+    } \
+} while(0)
 
-#ifndef darr_memcpy
-  #include <string.h>
-  #define darr_memcpy(D, S, SZ) memcpy(D, S, SZ)
-#endif
+//Create a new array of type T
+#define darr_new(T, ...) ({ \
+    struct { darr_size_t cap; darr_size_t len; void* src; } _opt = { \
+        .cap = darr_default_cap, \
+        .len = 0, \
+        .src = NULL, \
+        ##__VA_ARGS__ \
+    }; \
+    if (_opt.cap < _opt.len) _opt.cap = _opt.len; \
+    size_t _total_sz = darr_prefix_sz + (sizeof(T) * _opt.cap); \
+    darr_header* _raw = (darr_header*)malloc(_total_sz); \
+    _raw->len = _opt.len; \
+    _raw->cap = _opt.cap; \
+    T* _data_ptr = (T*)((char*)_raw + darr_prefix_sz); \
+    if (_opt.src) memcpy(_data_ptr, _opt.src, sizeof(T) * _opt.len); \
+    _data_ptr; \
+})
+//Initialize array for variable A
+#define darr_init(A) ((A) = darr_new(__typeof__(*(A))))
 
-#define darr_base_type(PT) __typeof__(* ( (PT) 0 ))
-#define darr_ptr_type(T) __typeof__(T)*
+//Access
+//Length of the array
+#define darr_len(A) (darr_get_header(A)->len)
 
-#define darr_calc_cap(L, G) (((((L)-1)/(G))+1)*(G))
+//Capacity of the array
+#define darr_cap(A) (darr_get_header(A)->cap)
 
-//Gets the capacity (number of elements the array can hold)
-//of the underlying pointer of array A
-//NOTE: The returned value is guaranteed to be at least as big as the actual capability!
-#define darr_cap(A) darr_calc_cap((A).len, (A).growth)
+//Value of first element of the array A
+#define darr_first(A) ((A)[0])
 
-//Resize underlying pointer of array A to size S
-#define darr_resize(A, S) ((A).ptr = darr_realloc((A).ptr, S))
+//Value of the last element of the array A
+#define darr_last(A)  ((A)[darr_len(A) - 1])
 
-//Create a new array with type T and capacity growth G
-#define darr_new(T, G) (darr_init(G))
-
-//Element of array A of type T at I-th place
-#define darr_at(T, A, I) (((darr_ptr_type(T))((A).ptr))[I])
-
-//First element of array A of type T
-#define darr_first(T, A) darr_at(T, A, 0)
-
-//Last element of array A of type T
-#define darr_last(T, A) darr_at(T, A, (A).len-1)
-
-//Pointer to the element of array A of type T at I-th place
-#define darr_at_ptr(T, A, I) (&dyn_arr_at(T, A, I))
-
-//Push element E to array A of type T
-//Returns length of the array
-#define darr_push(T, A, E) ({ \
-  if (darr_full(A)) darr_resize(A, sizeof(T)*((A).len+(A).growth)); \
-  darr_at(T, A, (A).len++) = E; \
-  darr_len(A); \
+//Push / pop
+//Push element E to array A
+#define darr_push(A, E) ({ \
+    _darr_grow_if_needed(A); \
+    __typeof__(E) _darr_push_val = (E); \
+    (A)[darr_len(A)++] = _darr_push_val; \
+    _darr_push_val; \
 })
 
-//Pops the last element from array A of type T
-#define darr_pop(T, A) (darr_at(T, A, --((A).len)))
-
-//Inserts an element into array A of type T at index I
-//This will automaticall resize it, so it's safe.
-//For unsafe version one can use darr_at(T, A, I) = E;
-#define darr_set(T, A, I, E) ({ \
-  if (darr_cap(A) < darr_calc_cap(I+1, (A).growth)){ \
-    (A).len = (I)+1; \
-    darr_resize(A, sizeof(T)*((A).growth)*((I)/((A).growth)+1)); \
-  } \
-  darr_at(T, A, I) = E; \
-  E; \
+//Pop element from array A
+#define darr_pop(A) ({ \
+    darr_get_header(A)->len--; \
+    (A)[darr_len(A)]; \
 })
 
-//Get the pointer to element of array A of type T at index I.
-//Return NULL for index out of range.
-#define darr_get(T, A, I) ((I) < (A).len ? darr_at(T, A, I) : NULL)
+//Free
 
-//Resizes the underlying pointer of array A of type T to current length
-#define darr_fit(T, A) darr_resize(A, darr_cap(A)*sizeof(T))
+//Free the array
+#define darr_free(A) do { \
+    if(A) free(darr_get_header(A)); \
+    (A) = NULL; \
+} while(0)
 
-//Make a dynamic array of type T and growth G from a pointer V of type T
-#define darr_copy(T, V, G) ({ \
-  darr darr_NEW_ARR = darr_init(G); \
-  darr_NEW_ARR.len = sizeof(V)/sizeof(T); \
-  darr_NEW_ARR.ptr = darr_malloc(darr_cap(darr_NEW_ARR)*sizeof(T)); \
-  darr_memcpy(darr_NEW_ARR.ptr, V, sizeof(V)); \
-  darr_NEW_ARR; \
-})
-
-#define for_darr(I, T, E, A) \
-  for (darr_size_t I=0; I<(A).len; I++) \
+#define for_darr(I, E, A) \
+  for (darr_size_t I=0; I<darr_len(A); I++) \
   for (int E##_DARR_CONTROL=0;E##_DARR_CONTROL==0;) \
-  for (T E=darr_at(T, A, I);E##_DARR_CONTROL==0;E##_DARR_CONTROL=1) \
+  for (__typeof__((A)[0]) E=(A)[I];E##_DARR_CONTROL==0;E##_DARR_CONTROL=1) \
 
-#define for_darr_elems(T, V, A) for (darr_ptr_type(T) V=(A).ptr; V<=&darr_last(T, A); V++)
+#define for_darr_elems(V, A) for (__typeof__(A) V = (A); V < (A) + darr_len(A); V++)
 
-//Free the dynamic array A
-#define darr_free(A) free((A).ptr)
 //end of types/macros
 #if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_DARR_IMPLEMENTATION) //Implementation part only gets compiled once
 //Declare variables here
-//Initialize a new empty array
-darr darr_init(darr_len_t growth){
-  return (darr){
-    .len=0,
-    .growth=growth,
-    .ptr=NULL
-  };
-}
-//Check if array A is full and needs resizing for new elements
-darr_bool_t darr_full(darr arr){
-  return arr.len % arr.growth == 0;
-}
-
-//Check if array A empty
-darr_bool_t darr_empty(darr arr){
-  return !arr.len;
-}
-
-//Returns the length of array arr
-darr_len_t darr_len(darr arr){
-  return arr.len;
-}
 
 //end of variables
 #endif //UTILS_H_DARR_IMPLEMENTATION
