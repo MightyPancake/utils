@@ -47,7 +47,9 @@ void test_darr(){
   //Iterate over pointers to elements
   for_darr_elems(v, arr)
     printf("%d\n", *v);
-    
+  
+  while(darr_len(arr) > 0)
+    printf("Popped %d\n", darr_pop(arr));
 
   darr_free(arr);
 }
