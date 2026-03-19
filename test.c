@@ -85,14 +85,14 @@ void test_strus(){
 void test_quake(){
   quake arena = quake_new(.chunk_cap=32);
 
-  int* nums = quake_new_darr(&arena, int, .cap=4, .len=4, .src=(int[]){0,3,6,9});
+  int* nums = quake_darr_new(&arena, int, .cap=4, .len=4, .src=(int[]){0,3,6,9});
   if (!nums) {
-    printf("quake_new_darr failed\n");
+    printf("quake_darr_new failed\n");
     exit(1);
   }
 
   if (darr_len(nums) != 4 || nums[3] != 9) {
-    printf("quake_new_darr data mismatch\n");
+    printf("quake_darr_new data mismatch\n");
     exit(1);
   }
 
@@ -110,6 +110,12 @@ void test_quake(){
     exit(1);
   }
   printf("%s\n", msg2);
+
+  int* single = quake_one_cpy(&arena, 42);
+  if (!single || *single != 42) {
+    printf("quake_one_cpy failed\n");
+    exit(1);
+  }
 
   (void)quake_alloc(&arena, 24);
   (void)quake_alloc(&arena, 24);

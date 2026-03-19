@@ -334,6 +334,14 @@ typedef struct quake {
   _arena; \
 })
 
+#define quake_one(A, T) ((T*)quake_alloc((A), sizeof(T)))
+
+#define quake_one_cpy(A, V) ({ \
+  __typeof__(V)* _quake_one_cpy_tmp = quake_one((A), __typeof__(V)); \
+  if (_quake_one_cpy_tmp) *_quake_one_cpy_tmp = (V); \
+  _quake_one_cpy_tmp; \
+})
+
 void quake_init(quake* arena, quake_size_t chunk_cap);
 void quake_reset(quake* arena);
 void quake_free(quake* arena);
@@ -344,7 +352,7 @@ int quake_vasprintf(quake* arena, char** out, const char* format, va_list ap);
 int quake_asprintf(quake* arena, char** out, const char* format, ...);
 char* quake_strus_newf(quake* arena, const char* fmt, ...);
 
-#define quake_new_darr(A, T, ...) ({ \
+#define quake_darr_new(A, T, ...) ({ \
     struct { quake_size_t cap; quake_size_t len; void* src; } _opt = { \
         .cap = darr_default_cap, \
         .len = 0, \
