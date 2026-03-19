@@ -1,6 +1,8 @@
 #define UTILS_H_IMPLEMENTATION
 #include "utils.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define test_util_module(M) printf(#M" test:\n"); test_##M();
 
@@ -66,6 +68,7 @@ void test_strus(){
 
   str = strus_new;
   strus_cat(str, "strus!");
+
   for_str(i, v, str)
     printf("%d. %c\n", i, v);
 
@@ -77,6 +80,52 @@ void test_strus(){
   strus_replace(str, "World", "and welcome to string utils");
   strus_replace(str, "string utils", "strus");
   printf("%s\n", str);
+}
+
+void test_quake(){
+  quake arena = quake_new(.chunk_cap=32);
+
+  int* nums = quake_new_darr(&arena, int, .cap=4, .len=4, .src=(int[]){0,3,6,9});
+  if (!nums) {
+    printf("quake_new_darr failed\n");
+    exit(1);
+  }
+
+  if (darr_len(nums) != 4 || nums[3] != 9) {
+    printf("quake_new_darr data mismatch\n");
+    exit(1);
+  }
+
+  char* msg = NULL;
+  int len = quake_asprintf(&arena, &msg, "quake %d %s", nums[3], "ok");
+  if (len < 0 || !msg || strcmp(msg, "quake 9 ok") != 0) {
+    printf("quake_asprintf failed\n");
+    exit(1);
+  }
+  printf("%s\n", msg);
+
+  char* msg2 = quake_strus_newf(&arena, "quake-strus %d %s", nums[1], "ok");
+  if (!msg2 || strcmp(msg2, "quake-strus 3 ok") != 0) {
+    printf("quake_strus_newf failed\n");
+    exit(1);
+  }
+  printf("%s\n", msg2);
+
+  (void)quake_alloc(&arena, 24);
+  (void)quake_alloc(&arena, 24);
+  if (arena.head == arena.tail) {
+    printf("quake chunk growth failed\n");
+    exit(1);
+  }
+
+  quake_reset(&arena);
+  char* copy = quake_strdup(&arena, "quake-reset-ok");
+  if (!copy || strcmp(copy, "quake-reset-ok") != 0) {
+    printf("quake_reset/quake_strdup failed\n");
+    exit(1);
+  }
+
+  quake_free(&arena);
 }
 
 // #define CLAMP(MIN, VAL, MAX) (VAL < MIN ? MIN : (VAL > MAX ? MAX : VAL))
@@ -121,4 +170,6 @@ int main(){
   test_util_module(aesc);
   //Test strus
   test_util_module(strus);
+  //Test quake
+  test_util_module(quake);
 }
