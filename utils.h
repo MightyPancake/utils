@@ -345,6 +345,7 @@ typedef struct quake {
 void quake_init(quake* arena, quake_size_t chunk_cap);
 void quake_reset(quake* arena);
 void quake_free(quake* arena);
+quake_size_t quake_allocated_sz(quake* arena);
 void* quake_alloc(quake* arena, quake_size_t bytes);
 void* quake_calloc(quake* arena, quake_size_t count, quake_size_t bytes);
 char* quake_strdup(quake* arena, const char* src);
@@ -420,6 +421,14 @@ void quake_free(quake* arena) {
   }
   arena->head = NULL;
   arena->tail = NULL;
+}
+
+quake_size_t quake_allocated_sz(quake* arena) {
+  if (!arena) return 0;
+  quake_size_t total = 0;
+  for (quake_chunk* chunk = arena->head; chunk; chunk = chunk->next)
+    total += chunk->cap;
+  return total;
 }
 
 void* quake_alloc(quake* arena, quake_size_t bytes) {
