@@ -762,6 +762,36 @@ int strus_return = 0;
 
 #define aesc_fg_color(V) aesc_seq("[38;5;"#V"m")
 
+#define aesc_black_bg aesc_style("40")
+#define aesc_red_bg aesc_style("41")
+#define aesc_green_bg aesc_style("42")
+#define aesc_yellow_bg aesc_style("43")
+#define aesc_blue_bg aesc_style("44")
+#define aesc_magenta_bg aesc_style("45")
+#define aesc_cyan_bg aesc_style("46")
+#define aesc_white_bg aesc_style("47")
+#define aesc_default_bg aesc_style("49")
+
+//Bold
+#define aesc_bold_on aesc_style("1")
+#define aesc_bold_off aesc_style("22")
+#define aesc_bold(S) aesc_bold_on S aesc_bold_off
+
+//Italic
+#define aesc_italic_on aesc_style("3")
+#define aesc_italic_off aesc_style("23")
+#define aesc_italic(S) aesc_italic_on S aesc_italic_off
+
+//Underline
+#define aesc_begin_underline aesc_style("4")
+#define aesc_end_underline aesc_style("24")
+#define aesc_underline(S) aesc_begin_underline S aesc_end_underline
+
+//Reverse
+#define aesc_begin_reverse aesc_style("7")
+#define aesc_end_reverse aesc_style("27")
+#define aesc_reverse(S) aesc_begin_reverse S aesc_end_reverse
+
 //Cursor
 #define aesc_home aesc_seq("[H")
 #define aesc_mv(X, Y) aesc_seq("[" #X ";" #Y "f")
