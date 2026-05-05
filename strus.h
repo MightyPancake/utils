@@ -144,6 +144,8 @@ extern int strus_return;
 #define strus_switch(S, C1) if (strus_eq(S, C1))
 #define strus_case(S, C1) else if (strus_eq(S, C1))
 
+#define strus_is_empty(S) (strus_len(S) == 0)
+
 //end of types/macros
 #if defined(UTILS_H_IMPLEMENTATION) || defined(UTILS_H_STRUS_IMPLEMENTATION) //Implementation part only gets compiled once
 //Declare variables here
