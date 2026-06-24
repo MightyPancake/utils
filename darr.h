@@ -120,8 +120,8 @@ typedef struct darr_header {
 
 #define for_darr(I, E, A) \
   for (darr_size_t I=0; I<darr_len(A); I++) \
-  for (int E##_DARR_CONTROL=0;E##_DARR_CONTROL==0;) \
-  for (__typeof__((A)[0]) E=(A)[I];E##_DARR_CONTROL==0;E##_DARR_CONTROL=1) \
+  for (int E##_DARR_CTRL=0; E##_DARR_CTRL>=0; E##_DARR_CTRL = E##_DARR_CTRL ? -1 : (I=darr_len(A), -1)) \
+  for (__typeof__((A)[0]) E=(A)[I]; E##_DARR_CTRL==0; E##_DARR_CTRL=1)
 
 #define for_darr_elems(V, A) for (__typeof__(A) V = (A); V < (A) + darr_len(A); V++)
 
