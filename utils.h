@@ -134,12 +134,15 @@ typedef struct darr_header {
 
 //Create a new array of type T
 #define darr_new(T, ...) ({ \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Woverride-init\"") \
     struct { darr_size_t cap; darr_size_t len; void* src; } _opt = { \
         .cap = darr_default_cap, \
         .len = 0, \
         .src = NULL, \
         ##__VA_ARGS__ \
     }; \
+    _Pragma("GCC diagnostic pop") \
     if (_opt.cap < _opt.len) _opt.cap = _opt.len; \
     size_t _total_sz = darr_prefix_sz + (sizeof(T) * _opt.cap); \
     darr_header* _raw = (darr_header*)malloc(_total_sz); \
@@ -354,12 +357,15 @@ int quake_asprintf(quake* arena, char** out, const char* format, ...);
 char* quake_strus_newf(quake* arena, const char* fmt, ...);
 
 #define quake_darr_new(A, T, ...) ({ \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Woverride-init\"") \
     struct { quake_size_t cap; quake_size_t len; void* src; } _opt = { \
         .cap = darr_default_cap, \
         .len = 0, \
         .src = NULL, \
         ##__VA_ARGS__ \
     }; \
+    _Pragma("GCC diagnostic pop") \
     T* _result = NULL; \
     if (_opt.cap < _opt.len) _opt.cap = _opt.len; \
     size_t _total_sz = darr_prefix_sz + (sizeof(T) * _opt.cap); \
