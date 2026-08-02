@@ -133,13 +133,18 @@ typedef struct darr_header {
 } while(0)
 
 //Create a new array of type T
+//Caller-supplied .cap/.len/.src legitimately override the defaults below via
+//##__VA_ARGS__ splicing into the same initializer; -Woverride-init is expected here.
 #define darr_new(T, ...) ({ \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Woverride-init\"") \
     struct { darr_size_t cap; darr_size_t len; void* src; } _opt = { \
         .cap = darr_default_cap, \
         .len = 0, \
         .src = NULL, \
         ##__VA_ARGS__ \
     }; \
+    _Pragma("GCC diagnostic pop") \
     if (_opt.cap < _opt.len) _opt.cap = _opt.len; \
     size_t _total_sz = darr_prefix_sz + (sizeof(T) * _opt.cap); \
     darr_header* _raw = (darr_header*)malloc(_total_sz); \
